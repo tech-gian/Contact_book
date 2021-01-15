@@ -39,7 +39,10 @@ class Database:
         conn.commit()
         conn.close()
 
-    
+    # Return size of table (meaning dict)
+    def size(self):
+        return len(self.name_to_num)
+
     # Add new registration
     def add(self, name, number):
         # Connecting to database
