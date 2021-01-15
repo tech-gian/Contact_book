@@ -18,8 +18,10 @@ class Database:
     # Constructor
     def __init__(self, name):
         self.name = name
-        self.name_to_num = {}
-        self.num_to_name = {}
+        self.id_counter = 0
+        self.name_to_id = {}
+        self.num_to_id = {}
+        self.id_to = {}
 
         # Connecting to database
         conn = sqlite3.connect(name + ".db")
@@ -33,15 +35,17 @@ class Database:
             # TODO: fill in dicts
         # Else create it
         else:
-            cur.execute("create table " + name + " (name, number)")
+            cur.execute("create table " + name + " (id, name, number)")
 
         # Closing connection
         conn.commit()
         conn.close()
 
+
     # Return size of table (meaning dict)
     def size(self):
-        return len(self.name_to_num)
+        return len(self.name_to_id)
+
 
     # Add new registration
     def add(self, name, number):
@@ -50,13 +54,17 @@ class Database:
         cur = conn.cursor()
 
         # TODO: Check if already registered
+        # Then return False
         
         # Inserting registration
-        cur.execute("insert into " + self.name + " values (?, ?)", (name, number))
+        cur.execute("insert into " + self.name + " values (?, ?, ?)", (self.id_counter, name, number))
 
         # Insert registration to dicts
-        self.name_to_num[name] = number
-        self.num_to_name[number] = name
+        self.name_to_id[name] = self.id_counter
+        self.num_to_id[number] = self.id_counter
+        self.id_to[self.id_counter] = [name, number]
+
+        self.id_counter += 1
 
         # Closing connection
         conn.commit()
@@ -66,20 +74,22 @@ class Database:
 
 
     # Delete old registration, by name
-    def delete(self, name):
+    def delete_name(self, name):
         # Check if name exists in table
-        if self.name_to_num.has_key(name):
+        if name in self.name_to_id:
             # Removing elements from dicts
-            number = self.name_to_num.get(name)
-            self.name_to_num.pop(name)
-            self.num_to_name.pop(number)
+            temp_id = self.name_to_id.get(name)
+            temp_num = self.id_to.get(temp_id)[1]
+            self.name_to_id.pop(name)
+            self.num_to_id.pop(temp_num)
+            self.id_to.pop(temp_id)
 
             # Removing register from db
             # TODO: check if table exists
             conn = sqlite3.connect(self.name + ".db")
             cur = conn.cursor()
 
-            cur.execute("delete from " + self.name + " where id=?", name)
+            cur.execute("delete from " + self.name + " where id=?", (temp_id, ))
             
             # Closing connection
             conn.commit()
@@ -93,20 +103,22 @@ class Database:
 
     
     # Delete old registration, by number
-    def delete(self, number):
+    def delete_num(self, number):
         # Check if number exists in table
-        if self.num_to_name.has_key(number):
+        if number in self.num_to_id:
             # Removing elements from dicts
-            name = self.num_to_name.get(number)
-            self.num_to_name.pop(number)
-            self.name_to_num.pop(name)
+            temp_id = self.num_to_id.get(number)
+            temp_name = self.id_to.get(temp_id)[0]
+            self.num_to_id.pop(number)
+            self.name_to_id.pop(temp_name)
+            self.id_to.pop(temp_id)
 
             # Removing register from db
             # TODO: check if table exists
             conn = sqlite3.connect(self.name + ".db")
             cur = conn.cursor()
 
-            cur.execute("delete from " + self.name + " where id=?", name)
+            cur.execute("delete from " + self.name + " where id=?", (temp_id, ))
 
             # Closing connection
             conn.commit()
@@ -118,10 +130,11 @@ class Database:
 
 
     # Find a contact, by name
-    def find(self, name):
+    def find_name(self, name):
         # Check if name exists in table
-        if self.name_to_num.has_key(name):
-            print("Name: " + name + ", Phone_number: " + self.name_to_num.get(name))
+        if name in self.name_to_id:
+            temp_id = self.name_to_id.get(name)
+            print("Name: " + name + ", Phone_number: " + self.id_to.get(temp_id)[1])
             return True
         else:
             print("Contact not found")
@@ -129,10 +142,11 @@ class Database:
 
 
     # Find a contact, by number
-    def find(self, number):
+    def find_num(self, number):
         # Check if number exists in table
-        if self.num_to_name.has_key(number):
-            print("Name: " + self.num_to_name.get(number) + ", Phone_number: " + number)
+        if number in self.num_to_id:
+            temp_id = self.num_to_id.get(number)
+            print("Name: " + self.id_to.get(temp_id)[0] + ", Phone_number: " + number)
             return True
         else:
             print("Contact not found")
@@ -151,20 +165,20 @@ class Database:
                 # For entered order
                 if ans == 'o':
                     for item in self.name_to_num:
-                        print(item + " " + self.name_to_num.get(item))
+                        print(item + " " + str(self.name_to_num.get(item)))
 
                     break
                 # For alphabetical order
                 elif ans == 'a':
                     temp = []
                     for item in self.name_to_num:
-                        tup = tuple(item, self.name_to_num.get(item))
+                        tup = (item, self.name_to_num.get(item))
                         temp.append(tup)
                     
                     # TODO: check that list_sort() works fine
                     temp.sort(key=list_sort)
                     for item in temp:
-                        print(item[0] + " " + item[1])
+                        print(item[0] + " " + str(item[1]))
                     
                     break
                 else:
