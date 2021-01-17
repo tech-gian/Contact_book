@@ -82,7 +82,6 @@ class Database_Test(unittest.TestCase):
     def test_delete(self):
         DB_NAME = get_random_string(10)
 
-
         # Create db
         db = Database(DB_NAME)
 
@@ -111,8 +110,37 @@ class Database_Test(unittest.TestCase):
 
     # Testing if finding contact works fine
     def test_find(self):
-        pass
+        DB_NAME = get_random_string(10)
 
+        # Create db
+        db = Database(DB_NAME)
+
+        # Insert names with phones
+        for i in range(0, 100):
+            if i < 10:
+                num = "692030400"
+            else:
+                num = "69203040"
+
+            db.add("test_name" + str(i), num + str(i))
+
+        # Search a contact by name
+        self.assertTrue(db.find_name("test_name48"))
+        self.assertFalse(db.find_name("no_existing"))
+        self.assertEqual(db.size(), 100)
+
+        # Search a contact by number
+        self.assertTrue(db.find_num("6920304075"))
+        self.assertFalse(db.find_num("8050603040"))
+        self.assertEqual(db.size(), 100)
+
+        # Delete a contact and search for it
+        db.delete_name("test_name32")
+        self.assertFalse(db.find_name("test_name32"))
+        self.assertFalse(db.find_num("6920304032"))
+        self.assertEqual(db.size(), 99)
+
+        os.remove(DB_NAME + ".db")
 
 
 
