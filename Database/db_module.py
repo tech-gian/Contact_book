@@ -29,10 +29,18 @@ class Database:
 
         cur.execute("select count(name) from sqlite_master where type='table' and name='" + name + "'")
 
-        # If table exists, TODO
+        # If table exists
         if cur.fetchone()[0] == 1:
             print("Table exists")
-            # TODO: fill in dicts
+            cur.execute("select * from " + name)
+            rows = cur.fetchall()
+
+            for row in rows:
+                self.name_to_id[row[1]] = row[0]
+                self.num_to_id[row[2]] = row[0]
+                self.id_to[row[0]] = [row[1], row[2]]
+                
+            self.id_counter = rows[-1][0] + 1
         # Else create it
         else:
             cur.execute("create table " + name + " (id, name, number)")
@@ -53,24 +61,28 @@ class Database:
         conn = sqlite3.connect(self.name + ".db")
         cur = conn.cursor()
 
-        # TODO: Check if already registered
-        # Then return False
-        
-        # Inserting registration
-        cur.execute("insert into " + self.name + " values (?, ?, ?)", (self.id_counter, name, number))
+        flag = True
 
-        # Insert registration to dicts
-        self.name_to_id[name] = self.id_counter
-        self.num_to_id[number] = self.id_counter
-        self.id_to[self.id_counter] = [name, number]
+        # If already registered
+        if name in self.name_to_id or number in self.num_to_id:
+            print("Contact already existing")
+            flag = False
+        else:
+            # Inserting registration
+            cur.execute("insert into " + self.name + " values (?, ?, ?)", (self.id_counter, name, number))
 
-        self.id_counter += 1
+            # Insert registration to dicts
+            self.name_to_id[name] = self.id_counter
+            self.num_to_id[number] = self.id_counter
+            self.id_to[self.id_counter] = [name, number]
+
+            self.id_counter += 1
 
         # Closing connection
         conn.commit()
         conn.close()
-
-        return True
+        
+        return flag
 
 
     # Delete old registration, by name
@@ -183,5 +195,3 @@ class Database:
                     break
                 else:
                     print("This isn't a valid answer. Type again")
-                
-
