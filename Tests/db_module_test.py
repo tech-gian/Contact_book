@@ -3,7 +3,6 @@
 #############################################
 
 
-
 import unittest
 import sys
 import string
@@ -15,10 +14,7 @@ sys.path.append("../Database")
 from db_module import Database
 
 
-
 # Helping Functions
-
-
 def get_random_string(len):
     # Generates random string with upper and lower case letters
     letters = string.ascii_letters

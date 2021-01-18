@@ -6,10 +6,10 @@
 import sqlite3
 
 
-
 # Helping functions
 def list_sort(item):
     return item[0]
+
 
 
 # Class Database
@@ -97,7 +97,7 @@ class Database:
             self.id_to.pop(temp_id)
 
             # Removing register from db
-            # TODO: check if table exists
+            # (Assume table exists)
             conn = sqlite3.connect(self.name + ".db")
             cur = conn.cursor()
 
@@ -126,7 +126,7 @@ class Database:
             self.id_to.pop(temp_id)
 
             # Removing register from db
-            # TODO: check if table exists
+            # (Assume table exists)
             conn = sqlite3.connect(self.name + ".db")
             cur = conn.cursor()
 
@@ -186,8 +186,7 @@ class Database:
                     for item in self.name_to_num:
                         tup = (item, self.name_to_num.get(item))
                         temp.append(tup)
-                    
-                    # TODO: check that list_sort() works fine
+
                     temp.sort(key=list_sort)
                     for item in temp:
                         print(item[0] + " " + str(item[1]))
