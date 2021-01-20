@@ -181,6 +181,8 @@ class Database:
 
                     break
                 # For alphabetical order
+                # (Only temp_list is getting sorted,
+                # the original dictionary staying untouched)
                 elif ans == 'a':
                     temp = []
                     for item in self.name_to_num:
