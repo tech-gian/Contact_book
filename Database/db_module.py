@@ -44,6 +44,7 @@ class Database:
         # Else create it
         else:
             cur.execute("create table " + name + " (id, name, number)")
+            print("New table created")
 
         # Closing connection
         conn.commit()
@@ -77,6 +78,7 @@ class Database:
             self.id_to[self.id_counter] = [name, number]
 
             self.id_counter += 1
+            print("Contact added")
 
         # Closing connection
         conn.commit()
@@ -106,6 +108,8 @@ class Database:
             # Closing connection
             conn.commit()
             conn.close()
+
+            print("Contact deleted")
             return True
         else:
             print("No contact with name: " + name + ", found")
@@ -135,6 +139,8 @@ class Database:
             # Closing connection
             conn.commit()
             conn.close()
+
+            print("Contact deleted")
             return True
         else:
             print("No contact with number: " + number + ", found")
@@ -176,8 +182,9 @@ class Database:
 
                 # For entered order
                 if ans == 'o':
-                    for item in self.name_to_num:
-                        print(item + " " + str(self.name_to_num.get(item)))
+                    for item in self.id_to:
+                        temp = self.id_to.get(item)
+                        print("Name: " + temp[0] + ", Phone_number: " + temp[1])
 
                     break
                 # For alphabetical order
@@ -185,13 +192,14 @@ class Database:
                 # the original dictionary staying untouched)
                 elif ans == 'a':
                     temp = []
-                    for item in self.name_to_num:
-                        tup = (item, self.name_to_num.get(item))
+                    for item in self.id_to:
+                        temp_item = self.id_to.get(item)
+                        tup = (temp_item[0], temp_item[1])
                         temp.append(tup)
 
                     temp.sort(key=list_sort)
                     for item in temp:
-                        print(item[0] + " " + str(item[1]))
+                        print("Name: " + item[0] + ", Phone_number: " + str(item[1]))
                     
                     break
                 else:

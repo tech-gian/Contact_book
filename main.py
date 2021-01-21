@@ -15,17 +15,16 @@ from db_module import Database
 print("Welcome to your Contact Book")
 
 DB_NAME = input("Give me your name: ")
+db = Database(DB_NAME)
 
 # Start the loop
 while True:
-    db = Database(DB_NAME)
-
     ans = input("Type 'i' to insert a contact, 'd' to delete, 'f' to find one, 'p' to see all of them or 'q' to quit: ")
 
     # Add contact
     if ans == 'i':
         name = input("Type contact's name: ")
-        number = input("Type contact's number")
+        number = input("Type contact's number: ")
 
         db.add(name, number)
     # Delete contact
