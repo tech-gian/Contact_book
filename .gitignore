@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# .db files (Databases created don't have to be saved in git)
+*.db
